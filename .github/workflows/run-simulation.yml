@@ -1,0 +1,48 @@
+name: Run WorldQuant Simulation
+
+# 触发条件：可根据需求修改（例如 push 到 main 分支时运行）
+on:
+  # 1. 代码推送到main分支时触发（用于测试）
+  push:
+    branches: [ main ]
+    paths: 
+      - 'main.py'  # 仅当该文件修改时触发（可选，优化性能）
+      - '.github/workflows/run-simulation.yml'  # 工作流文件修改时触发
+  # 2. 定时触发（每天UTC时间8点执行，可根据需要调整）
+  schedule:
+    - cron: '0 8 * * *'
+  # 3. 保留手动触发选项（方便紧急执行）
+  workflow_dispatch:
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest  # 使用 Ubuntu 环境
+    
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4  # 拉取当前仓库代码到 runner
+      
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'  # 指定 Python 版本
+      
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas  # 安装脚本所需依赖
+      
+      - name: 运行回测脚本
+        env:
+          # 从 GitHub Secrets 注入环境变量
+          WQ_USERNAME: ${{ secrets.WQ_USERNAME }}
+          WQ_PASSWORD: ${{ secrets.WQ_PASSWORD }}
+        run: |
+          python main.py  # 执行脚本
+      
+      - name: 上传日志文件（可选）
+        if: always()  # 即使脚本失败也上传日志
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-logs
+          path: simulation.log  # 上传生成的日志文件

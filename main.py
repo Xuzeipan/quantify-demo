@@ -6,11 +6,19 @@ from requests.auth import HTTPBasicAuth
 
 def sign_in():
     # Load credentials # 加载凭证
-    with open(expanduser('brain.txt')) as f:
-        credentials = json.load(f)
+    # with open(expanduser('brain.txt')) as f:
+    #     credentials = json.load(f)
 
     # Extract username and password from the list # 从列表中提取用户名和密码
-    username, password = credentials
+    # username, password = credentials
+
+# 从环境变量获取凭证（适配 GitHub Actions）
+    import os
+    username = os.getenv("WQ_USERNAME")
+    password = os.getenv("WQ_PASSWORD")
+    
+    if not username or not password:
+        raise ValueError("请设置 WQ_USERNAME 和 WQ_PASSWORD 环境变量")
 
     # Create a session object # 创建会话对象
     sess = requests.Session()
