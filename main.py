@@ -103,7 +103,7 @@ def get_datafields(s, searchScope, dataset_id: str = '', search: str = ''):
     return datafields_df
 
 searchScope = {'region': 'USA', 'delay': 1, 'universe': 'TOP3000','instrumentType': 'EQUITY'}
-fundamental6 = get_datafields(s = sess, searchScope = searchScope, dataset_id = 'model51')
+fundamental6 = get_datafields(s = sess, searchScope = searchScope, dataset_id = 'news12')
 
 fundamental6 = fundamental6[fundamental6['type'] == 'MATRIX']
 fundamental6.head()
